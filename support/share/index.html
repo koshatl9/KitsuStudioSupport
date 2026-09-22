@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="referrer" content="no-referrer" />
+  <title>Поддержать стрим</title>
+  <style>
+    :root{font-family:Inter,system-ui,sans-serif;color:#302154;background:#fff8f7}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 15% 10%,#ffe7ed,transparent 38%),radial-gradient(circle at 85% 15%,#e8ddff,transparent 42%),#fffaf8}.card{width:min(620px,100%);padding:clamp(28px,6vw,54px);border:1px solid #e5dafa;border-radius:32px;background:#ffffffdf;box-shadow:0 24px 70px #664b8a22}small{font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#7b58be}h1{margin:12px 0;font-size:clamp(32px,7vw,54px);line-height:1.02}p{color:#6c607b;line-height:1.65}.links{display:grid;gap:12px;margin:28px 0}.button{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-radius:18px;background:#8f64ff;color:#fff;text-decoration:none;font-weight:900;box-shadow:0 10px 26px #8f64ff44}.button:hover{background:#774be8}.error{padding:14px;border-radius:16px;background:#fff0e2;color:#8b3e35;font-weight:800}.fine{font-size:12px}noscript{font-weight:800}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <small>Kitsu Studio · поддержка автора</small>
+    <h1 id="title">Поддержать стрим</h1>
+    <p id="description">Загрузка страницы…</p>
+    <div class="links" id="links"></div>
+    <p class="fine">Оплата, комиссии и возвраты обрабатываются выбранным сервисом. Kitsu Studio не запрашивает данные карты.</p>
+    <noscript>Для открытия ссылки требуется JavaScript.</noscript>
+  </main>
+  <script>
+    const providers={donatello:{name:"Donatello",host:"donatello.to",path:/^\/[A-Za-z0-9_-]+\/?$/},donationalerts:{name:"DonationAlerts",host:"www.donationalerts.com",path:/^\/r\/[A-Za-z0-9_-]+\/?$/},streamlabs:{name:"Streamlabs",host:"streamlabs.com",path:/^\/[A-Za-z0-9_-]+\/tip\/?$/}};
+    function safeLink(link){try{const rule=providers[link.provider],url=new URL(link.url);return rule&&url.protocol==="https:"&&url.hostname===rule.host&&!url.search&&!url.hash&&!url.username&&!url.password&&rule.path.test(url.pathname)}catch{return false}}
+    function fail(message){document.getElementById("description").textContent="";const box=document.getElementById("links");box.className="error";box.textContent=message}
+    try{
+      const encoded=location.hash.slice(1);if(!encoded||encoded.length>5000)throw Error("Ссылка поддержки повреждена.");
+      const normalized=encoded.replace(/-/g,"+").replace(/_/g,"/").padEnd(Math.ceil(encoded.length/4)*4,"=");
+      const bytes=Uint8Array.from(atob(normalized),c=>c.charCodeAt(0));const page=JSON.parse(new TextDecoder().decode(bytes));
+      if(!page.enabled||typeof page.title!=="string"||page.title.length>80||typeof page.description!=="string"||page.description.length>500||!Array.isArray(page.links)||!page.links.length||page.links.length>3||!page.links.every(safeLink))throw Error("Страница поддержки недоступна.");
+      document.title=page.title;document.getElementById("title").textContent=page.title;document.getElementById("description").textContent=page.description;
+      const links=document.getElementById("links");page.links.forEach(link=>{const a=document.createElement("a");a.className="button";a.href=link.url;a.rel="noopener noreferrer";a.textContent=`Поддержать через ${providers[link.provider].name} ↗`;links.append(a)});
+    }catch(error){fail(error instanceof Error?error.message:"Страница поддержки недоступна.")}
+  </script>
+</body>
+</html>
