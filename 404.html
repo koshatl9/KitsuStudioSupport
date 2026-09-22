@@ -6,14 +6,16 @@
   <meta name="referrer" content="no-referrer" />
   <title>Поддержать стрим</title>
   <style>
-    :root{font-family:Inter,system-ui,sans-serif;color:#302154;background:#fff8f7}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 15% 10%,#ffe7ed,transparent 38%),radial-gradient(circle at 85% 15%,#e8ddff,transparent 42%),#fffaf8}.card{width:min(620px,100%);padding:clamp(28px,6vw,54px);border:1px solid #e5dafa;border-radius:32px;background:#ffffffdf;box-shadow:0 24px 70px #664b8a22}small{font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#7b58be}h1{margin:12px 0;font-size:clamp(32px,7vw,54px);line-height:1.02}p{color:#6c607b;line-height:1.65}.links{display:grid;gap:12px;margin:28px 0}.button{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-radius:18px;background:#8f64ff;color:#fff;text-decoration:none;font-weight:900;box-shadow:0 10px 26px #8f64ff44}.button:hover{background:#774be8}.error{padding:14px;border-radius:16px;background:#fff0e2;color:#8b3e35;font-weight:800}.fine{font-size:12px}noscript{font-weight:800}
+    :root{font-family:Inter,"Segoe UI",system-ui,sans-serif;color:#302154;background:#fff8f7}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 12% 10%,#ffdce8 0,transparent 34%),radial-gradient(circle at 88% 15%,#dfd1ff 0,transparent 38%),radial-gradient(circle at 50% 100%,#fff0cf 0,transparent 36%),#fffaf8}.card{position:relative;width:min(640px,100%);padding:clamp(28px,7vw,58px);overflow:hidden;border:1px solid #e5dafa;border-radius:38px;background:#fffffff0;box-shadow:0 30px 100px #5d3b8226;backdrop-filter:blur(18px)}.card:after{content:"✦";position:absolute;right:34px;top:28px;color:#cdb7ff;font-size:28px}.heart{display:grid;width:68px;height:68px;place-items:center;border-radius:23px;background:linear-gradient(145deg,#a37cff,#7950e8);color:#fff;font-size:30px;box-shadow:0 14px 34px #8f64ff55}small{display:block;margin-top:26px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#7b58be}h1{margin:12px 0;font-size:clamp(36px,8vw,62px);line-height:1.02;letter-spacing:-.045em}p{color:#6c607b;line-height:1.65;font-weight:650}.label{margin:30px 0 0;color:#7950b8;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}.links{display:grid;gap:12px;margin:12px 0 30px}.button{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-radius:19px;background:linear-gradient(135deg,#966cff,#7b50ec);color:#fff;text-decoration:none;font-weight:900;box-shadow:0 11px 28px #8f64ff3d;transition:transform .16s ease,box-shadow .16s ease}.button:hover{transform:translateY(-2px);box-shadow:0 16px 34px #8f64ff52}.arrow{font-size:20px}.error{padding:16px;border-radius:18px;background:#fff0e2;color:#8b3e35;font-weight:800}.fine{margin:0;padding:15px 17px;border-radius:18px;background:#f7f2ff;font-size:12px}noscript{font-weight:800}@media(max-width:520px){.card{border-radius:28px;padding:28px 22px}.card:after{right:22px}.button{padding:16px}}
   </style>
 </head>
 <body>
   <main class="card">
+    <div class="heart">♥</div>
     <small>Kitsu Studio · поддержка автора</small>
     <h1 id="title">Поддержать стрим</h1>
     <p id="description">Загрузка страницы…</p>
+    <p class="label">Выбери удобный сервис</p>
     <div class="links" id="links"></div>
     <p class="fine">Оплата, комиссии и возвраты обрабатываются выбранным сервисом. Kitsu Studio не запрашивает данные карты.</p>
     <noscript>Для открытия ссылки требуется JavaScript.</noscript>
@@ -28,7 +30,7 @@
       const bytes=Uint8Array.from(atob(normalized),c=>c.charCodeAt(0));const page=JSON.parse(new TextDecoder().decode(bytes));
       if(!page.enabled||typeof page.title!=="string"||page.title.length>80||typeof page.description!=="string"||page.description.length>500||!Array.isArray(page.links)||!page.links.length||page.links.length>3||!page.links.every(safeLink))throw Error("Страница поддержки недоступна.");
       document.title=page.title;document.getElementById("title").textContent=page.title;document.getElementById("description").textContent=page.description;
-      const links=document.getElementById("links");page.links.forEach(link=>{const a=document.createElement("a");a.className="button";a.href=link.url;a.rel="noopener noreferrer";a.textContent=`Поддержать через ${providers[link.provider].name} ↗`;links.append(a)});
+      const links=document.getElementById("links");page.links.forEach(link=>{const a=document.createElement("a");a.className="button";a.href=link.url;a.rel="noopener noreferrer";const name=document.createElement("span");name.textContent=`Поддержать через ${providers[link.provider].name}`;const arrow=document.createElement("span");arrow.className="arrow";arrow.textContent="↗";a.append(name,arrow);links.append(a)});
     }catch(error){fail(error instanceof Error?error.message:"Страница поддержки недоступна.")}
   </script>
 </body>
